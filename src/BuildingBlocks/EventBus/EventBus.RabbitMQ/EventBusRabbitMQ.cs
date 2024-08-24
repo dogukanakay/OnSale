@@ -18,18 +18,23 @@ namespace EventBus.RabbitMQ
 
         public EventBusRabbitMQ(EventBusConfig config, IServiceProvider serviceProvider) : base(config, serviceProvider)
         {
-            if (config.Connection != null)
+            if (EventBusConfig.Connection != null)
             {
-                var connJson = JsonConvert.SerializeObject(EventBusConfig.Connection, new JsonSerializerSettings()
+                if (EventBusConfig.Connection is ConnectionFactory)
+                    connectionFactory = EventBusConfig.Connection as ConnectionFactory;
+                else
                 {
-                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-                });
-                connectionFactory = JsonConvert.DeserializeObject<ConnectionFactory>(connJson);
+                    var connJson = JsonConvert.SerializeObject(EventBusConfig.Connection, new JsonSerializerSettings()
+                    {
+                        // Self referencing loop detected for property 
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                    });
+
+                    connectionFactory = JsonConvert.DeserializeObject<ConnectionFactory>(connJson);
+                }
             }
             else
-            {
-                connectionFactory = new ConnectionFactory();
-            }
+                connectionFactory = new ConnectionFactory(); //Create with default values
 
             persistentConnection = new RabbitMQPersistentConnection(connectionFactory, config.ConnectionRetryCount);
 

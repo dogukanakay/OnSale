@@ -22,12 +22,12 @@ namespace EventBus.UnitTest
         }
 
         [TestMethod]
-        public void Subscribe_Event_On_RabbitMQ_Test()
+        public void subscribe_event_on_rabbitmq_test()
         {
             services.AddSingleton<IEventBus>(sp =>
             {
                
-                return EventBusFactory.Create(GetRabbitMQConfig(), sp);
+                return EventBusFactory.Create(getrabbitmqconfig(), sp);
             });
             var sp = services.BuildServiceProvider();
 
@@ -39,11 +39,11 @@ namespace EventBus.UnitTest
         }
 
         [TestMethod]
-        public void Subscribe_Event_On_Azure_Test()
+        public void subscribe_event_on_azure_test()
         {
             services.AddSingleton<IEventBus>(sp =>
             {
-                return EventBusFactory.Create(GetAzureConfig(), sp);
+                return EventBusFactory.Create(getazureconfig(), sp);
             });
             var sp = services.BuildServiceProvider();
 
@@ -57,12 +57,12 @@ namespace EventBus.UnitTest
 
 
         [TestMethod]
-        public void Send_Message_To_RabbitMQ_Test()
+        public void send_message_to_rabbitmq_test()
         {
             services.AddSingleton<IEventBus>(sp =>
             {
 
-                return EventBusFactory.Create(GetRabbitMQConfig(), sp);
+                return EventBusFactory.Create(getrabbitmqconfig(), sp);
             });
             var sp = services.BuildServiceProvider();
 
@@ -72,12 +72,12 @@ namespace EventBus.UnitTest
         }
         
         [TestMethod]
-        public void Send_Message_To_Azure_Test()
+        public void send_message_to_azure_test()
         {
             services.AddSingleton<IEventBus>(sp =>
             {
 
-                return EventBusFactory.Create(GetAzureConfig(), sp);
+                return EventBusFactory.Create(getazureconfig(), sp);
             });
             var sp = services.BuildServiceProvider();
 
@@ -88,7 +88,7 @@ namespace EventBus.UnitTest
 
 
         
-        private EventBusConfig GetAzureConfig()
+        private EventBusConfig getazureconfig()
         {
             return new EventBusConfig
             {
@@ -97,12 +97,12 @@ namespace EventBus.UnitTest
                 DefaultTopicName = "OnSaleTopicName",
                 EventBusType = EventBusType.AzureServiceBus,
                 EventNameSuffix = "IntegrationEvent",
-                EventBusConnectionString = "Endpoint=sb://onsell.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=h/Eae4YrSFjPSIiRnEe1rKRwZW9LO4dTZ+ASbDLjbkU="
+                EventBusConnectionString = "AZURE-ENDPOINT"
 
             };
         }
         
-        private EventBusConfig GetRabbitMQConfig()
+        private EventBusConfig getrabbitmqconfig()
         {
             return new EventBusConfig
             {
@@ -111,7 +111,7 @@ namespace EventBus.UnitTest
                 DefaultTopicName = "OnSaleTopicName",
                 EventBusType = EventBusType.RabbitMQ,
                 EventNameSuffix = "IntegrationEvent"
-                //Connection = new ConnectionFactory() // Zaten default olarak bu ayarlar tanımlı eğer rabbitmq seçilmiş ise.
+                //Connection = new ConnectionFactory() // It is already configurated by default configs
                 //{
                 //    HostName = "localhost",
                 //    Port = 5672,
