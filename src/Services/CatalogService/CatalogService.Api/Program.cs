@@ -14,6 +14,8 @@ builder.Services.ConfigureDbContext(builder.Configuration);
 
 builder.Services.Configure<CatalogSettings>(builder.Configuration.GetSection("CatalogSettings"));
 
+builder.Services.ConfigureConsul(builder.Configuration);
+
 var app = builder.Build();
 
 // Migrate the database context
@@ -40,4 +42,5 @@ app.MigrateDbContext<CatalogContext>((context, services) =>
     seeder.SeedAsync(context, env, logger).Wait();
 });
 
+app.RegisterWithConsul(app.Lifetime,builder.Configuration);
 app.Run();
