@@ -28,6 +28,8 @@ builder.Services.AddSingleton<IEventBus>(sp =>
     };
     return EventBusFactory.Create(config, sp);
 });
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -42,8 +44,6 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
-
 IEventBus eventBus = app.Services.GetRequiredService<IEventBus>();
 eventBus.Subscribe<OrderStartedIntegrationEvent, OrderStartedIntegrationEventHandler>();
-
 app.Run();
