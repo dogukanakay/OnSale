@@ -32,6 +32,7 @@ builder.Services.ConfigureConsul(builder.Configuration);
 
 builder.Services.AddSingleton<IEventBus>(sp =>
 {
+
     EventBusConfig config = new()
     {
         ConnectionRetryCount = 5,
