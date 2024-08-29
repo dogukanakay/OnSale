@@ -38,7 +38,6 @@ builder.Services.AddSingleton(sp =>
     };
     return EventBusFactory.Create(config, sp);
 });
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -59,7 +58,8 @@ app.MigrateDbContext<OrderDbContext>((context, service) =>
     var dbContextSeeder = new OrderDbContextSeed();
     dbContextSeeder.SeedAsync(context, logger).Wait();
 });
-
 IEventBus eventBus = app.Services.GetRequiredService<IEventBus>();
 eventBus.Subscribe<OrderCreatedIntegrationEvent, OrderCreatedIntegrationEventHandler>();
+
+app.RegisterWithConsul(app.Lifetime, builder.Configuration);
 app.Run();
