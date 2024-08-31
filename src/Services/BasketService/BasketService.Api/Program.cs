@@ -20,7 +20,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddScoped<IBasketRepository, RedisBasketRepository>();
+builder.Services.AddTransient<IBasketRepository, RedisBasketRepository>();
 
 builder.Services.AddTransient<IIdentityService, IdentityService>();
 

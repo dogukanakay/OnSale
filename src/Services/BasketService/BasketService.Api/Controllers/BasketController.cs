@@ -81,7 +81,7 @@ namespace BasketService.Api.Controllers
         [HttpPost]
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public async Task<ActionResult> CheckoutAsync([FromBody] BasketCheckout basketCheckout)
+        public async Task<ActionResult> CheckoutAsync(BasketCheckout basketCheckout)
         {
             var userId = basketCheckout.Buyer;
             //var userId = basketCheckout.UserId.ToString();

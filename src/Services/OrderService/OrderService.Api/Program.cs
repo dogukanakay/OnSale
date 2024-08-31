@@ -32,7 +32,7 @@ builder.Services.AddSingleton(sp =>
     {
         ConnectionRetryCount = 5,
         EventNameSuffix = "IntegrationEvent",
-        SubscriberClientAppName = "BasketService",
+        SubscriberClientAppName = "OrderService",
         EventBusType = EventBusType.RabbitMQ
 
     };
