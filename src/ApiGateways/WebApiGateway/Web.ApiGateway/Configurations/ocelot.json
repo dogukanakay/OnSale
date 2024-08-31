@@ -1,5 +1,6 @@
 {
   "Routes": [
+   
     {
       "UseServiceDiscovery": true,
       "ServiceName": "CatalogService",
@@ -44,6 +45,8 @@
       "UpstreamScheme": "http"
     }
   ],
+
+  
 
 
 

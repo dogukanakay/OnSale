@@ -22,7 +22,8 @@ builder.Services.AddSingleton<AppStateManager>();
 
 builder.Services.AddTransient<IIdentityService, IdentityService>();
 builder.Services.AddTransient<ICatalogService, CatalogService>();
-
+builder.Services.AddTransient<IBasketService, BasketService>();
+builder.Services.AddScoped<AuthTokenHandler>();
 
 builder.Services.AddScoped(sp =>
 {
@@ -34,5 +35,5 @@ builder.Services.AddScoped(sp =>
 builder.Services.AddHttpClient("ApiGatewayHttpClient", client =>
 {
     client.BaseAddress = new Uri("http://localhost:5000");
-});
+}).AddHttpMessageHandler<AuthTokenHandler>();
 await builder.Build().RunAsync();

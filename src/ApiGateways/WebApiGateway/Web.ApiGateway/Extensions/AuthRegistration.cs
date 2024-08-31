@@ -2,7 +2,7 @@
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
-namespace BasketService.Api.Extensions
+namespace Web.ApiGateway.Extensions
 {
     public static class AuthRegistration
     {

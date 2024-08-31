@@ -1,11 +1,22 @@
+using Microsoft.AspNetCore.Builder;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 using Ocelot.Provider.Consul;
+using Ocelot.Values;
+using Web.ApiGateway.Extensions;
+using Web.ApiGateway.Infrastructure;
+using Web.ApiGateway.Services;
+using Web.ApiGateway.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
-IConfiguration configuration = new ConfigurationBuilder().SetBasePath(builder.Environment.ContentRootPath).AddJsonFile("Configurations/ocelot.json").Build();
+builder.Host.UseDefaultServiceProvider((context, options) =>
+{
+    options.ValidateOnBuild = false;
+    options.ValidateScopes = false;
+});
 
+IConfiguration configuration = new ConfigurationBuilder().SetBasePath(builder.Environment.ContentRootPath).AddJsonFile("Configurations/ocelot.json").Build();
 
 builder.Services.AddOcelot(configuration).AddConsul();
 
@@ -17,11 +28,31 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("CorsPolicy", builder => builder.SetIsOriginAllowed((host) => true)
-    .AllowAnyMethod()
-    .AllowAnyHeader()
-    .AllowCredentials());
+    options.AddPolicy("CorsPolicy",
+        builder => builder.SetIsOriginAllowed((host) => true)
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+        .AllowCredentials());
 });
+
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddTransient<HttpClientDelegatingHandler>();
+builder.Services.AddHttpClient("basket", c =>
+{
+    c.BaseAddress = new Uri(builder.Configuration["urls:basket"]);
+}).AddHttpMessageHandler<HttpClientDelegatingHandler>();
+
+builder.Services.AddHttpClient("catalog", c =>
+{
+    c.BaseAddress = new Uri(builder.Configuration["urls:catalog"]);
+}).AddHttpMessageHandler<HttpClientDelegatingHandler>();
+
+builder.Services.AddScoped<ICatalogService, CatalogService>();
+builder.Services.AddScoped<IBasketService, BasketService>();
+builder.Services.ConfigureAuth(builder.Configuration);
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
 
 var app = builder.Build();
 
@@ -32,9 +63,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 app.UseHttpsRedirection();
+app.UseRouting();
 app.UseCors("CorsPolicy");
+app.UseAuthentication();
 app.UseAuthorization();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+});
 
-app.MapControllers();
 await app.UseOcelot();
 app.Run();

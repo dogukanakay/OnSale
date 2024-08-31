@@ -1,11 +1,12 @@
 ﻿@page "/catalog"
+@using WebApp.Infrastructure
 
 <div class="row">
-    @if(model.Data != null && model.Data.Any())
+    @if (model.Data != null && model.Data.Any())
     {
         foreach (var item in model.Data)
         {
-            <WebApp.Components.Catalog.ProductView.ProductView CatalogItem="item" OnClick="()=>AddToCart(item)"/>
+            <WebApp.Components.Catalog.ProductView.ProductView CatalogItem="item" OnClick="()=>AddToCart(item)" />
         }
     }
 </div>
@@ -18,12 +19,32 @@
     [Inject]
     ICatalogService CatalogService { get; set; }
 
+    [Inject]
+    IIdentityService identityService { get; set; }
+
+    [Inject]
+    NavigationManager navigationManager { get; set; }
+
+    [Inject]
+    AppStateManager appState { get; set; }
+
+    [Inject]
+    public IBasketService basketService { get; set; }
+
     override protected async Task OnInitializedAsync()
     {
         model = await CatalogService.GetCatalogItems();
     }
     public async Task AddToCart(CatalogItem item)
     {
-        await Task.CompletedTask;
+        if (!identityService.IsLoggedIn)
+        {
+            //navigationManager.NavigateTo("login", true);
+            navigationManager.NavigateTo($"login?returnUrl={Uri.EscapeDataString(navigationManager.Uri)}", true);
+            return;
+        }
+
+        await basketService.AddItemToBasket(item.Id);
+        appState.UpdateCart(this);
     }
 }
