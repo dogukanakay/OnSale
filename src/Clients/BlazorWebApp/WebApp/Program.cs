@@ -35,6 +35,6 @@ builder.Services.AddScoped(sp =>
 
 builder.Services.AddHttpClient("ApiGatewayHttpClient", client =>
 {
-    client.BaseAddress = new Uri("http://localhost:5000");
+    client.BaseAddress = new Uri("http://localhost:5000/");
 }).AddHttpMessageHandler<AuthTokenHandler>();
 await builder.Build().RunAsync();

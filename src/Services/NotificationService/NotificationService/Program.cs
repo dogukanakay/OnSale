@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NotificationService.IntegrationEvents.EventHandlers;
 using PaymentService.Api.IntegrationEvents.Events;
+using RabbitMQ.Client;
 
 public class Program
 {
@@ -37,7 +38,11 @@ public class Program
                 ConnectionRetryCount = 5,
                 EventNameSuffix = "IntegrationEvent",
                 SubscriberClientAppName = "NotificationService",
-                EventBusType = EventBusType.RabbitMQ
+                EventBusType = EventBusType.RabbitMQ,
+                Connection = new ConnectionFactory()
+                {
+                    HostName = "RabbitMQ"
+                }
 
             };
             return EventBusFactory.Create(config, sp);

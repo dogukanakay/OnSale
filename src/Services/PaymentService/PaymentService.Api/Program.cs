@@ -6,9 +6,13 @@ using PaymentService.Api.IntegrationEvents.Events;
 using RabbitMQ.Client;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Configuration.AddEnvironmentVariables();
 // Add services to the container.
-
+builder.WebHost.UseDefaultServiceProvider((context, options) =>
+{
+    options.ValidateScopes = false;
+    options.ValidateOnBuild = false;
+});
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -23,7 +27,11 @@ builder.Services.AddSingleton<IEventBus>(sp =>
         ConnectionRetryCount = 5,
         EventNameSuffix = "IntegrationEvent",
         SubscriberClientAppName = "PaymentService",
-        EventBusType = EventBusType.RabbitMQ
+        EventBusType = EventBusType.RabbitMQ,
+        Connection = new ConnectionFactory()
+        {
+            HostName ="RabbitMQ"
+        }
         
     };
     return EventBusFactory.Create(config, sp);

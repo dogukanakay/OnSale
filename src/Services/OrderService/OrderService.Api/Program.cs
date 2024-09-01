@@ -10,16 +10,21 @@ using OrderService.Application;
 using OrderService.Infrastructure.Context;
 using OrderService.Persistence;
 using OrderService.Persistence.Context;
+using RabbitMQ.Client;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.WebHost.UseDefaultServiceProvider((context, options) =>
+{
+    options.ValidateScopes = false;
+    options.ValidateOnBuild = false;
+});
 // Add services to the container.
-
+builder.Configuration.AddEnvironmentVariables();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddLogging(configure=>configure.AddConsole()).
+builder.Services.AddLogging(configure => configure.AddConsole()).
     AddApplicationRegistration().
     AddPersistenceRegistration(builder.Configuration).
     ConfigureEventHandlers().
@@ -32,7 +37,11 @@ builder.Services.AddSingleton(sp =>
         ConnectionRetryCount = 5,
         EventNameSuffix = "IntegrationEvent",
         SubscriberClientAppName = "OrderService",
-        EventBusType = EventBusType.RabbitMQ
+        EventBusType = EventBusType.RabbitMQ,
+        Connection = new ConnectionFactory()
+        {
+            HostName = "RabbitMQ"
+        }
 
     };
     return EventBusFactory.Create(config, sp);

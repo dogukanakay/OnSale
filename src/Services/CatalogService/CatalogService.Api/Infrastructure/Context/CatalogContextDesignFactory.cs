@@ -8,7 +8,7 @@ namespace CatalogService.Api.Infrastructure.Context
         public CatalogContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<CatalogContext>()
-                .UseSqlServer("Server=localhost,1450; initial Catalog=OnSellCatalogDb;User=sa; Password=1234567Da*;Trusted_Connection=false; Encrypt=True;TrustServerCertificate=True");
+                .UseSqlServer("Server=OnsellDb; initial Catalog=OnSellCatalogDb;User=sa; Password=1234567Da*;Trusted_Connection=false; Encrypt=True;TrustServerCertificate=True");
 
             return new CatalogContext(optionsBuilder.Options);
         }
