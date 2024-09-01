@@ -7,13 +7,13 @@ namespace OrderService.Api.IntegrationEvents.EventHandlers
 {
     public class OrderCreatedIntegrationEventHandler : IIntegrationEventHandler<OrderCreatedIntegrationEvent>
     {
-        private readonly IMediator mediator;
+        private IServiceScopeFactory _serviceScopeFactory; 
         private readonly ILogger<OrderCreatedIntegrationEventHandler> logger;
 
-        public OrderCreatedIntegrationEventHandler(IMediator mediator, ILogger<OrderCreatedIntegrationEventHandler> logger)
+        public OrderCreatedIntegrationEventHandler(ILogger<OrderCreatedIntegrationEventHandler> logger, IServiceScopeFactory serviceScopeFactory)
         {
-            this.mediator = mediator;
             this.logger = logger;
+            _serviceScopeFactory = serviceScopeFactory;
         }
 
         public async Task Handle(OrderCreatedIntegrationEvent @event)
@@ -31,8 +31,14 @@ namespace OrderService.Api.IntegrationEvents.EventHandlers
                                 @event.State, @event.Country, @event.ZipCode,
                                 @event.CardNumber, @event.CardHolderName, @event.CardExpiration,
                                 @event.CardSecurityNumber, @event.CardTypeId);
+                using(var scope = _serviceScopeFactory.CreateScope())
+                {
+                    var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+                    await mediator.Send(createOrderCommand);
+                }
+                    
 
-                await mediator.Send(createOrderCommand);
+                
             }
             catch (Exception ex)
             {
